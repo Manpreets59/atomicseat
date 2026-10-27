@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseline — Tennis Club & Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500&display=swap" rel="stylesheet">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.18/+esm"
+    }
+  }
+  </script>
+
+  <style>
+    /* CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    img {
+      display: block;
+      max-width: 100%;
+    }
+    button {
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    ul, ol {
+      list-style: none;
+    }
+
+    :root {
+      --background: #ffffff;
+      --foreground: #0a0a0a;
+      --brand: #2563c9;       /* primary royal blue */
+      --brand-deep: #0f2f63;  /* deep navy — hero/stats/footer base */
+      --brand-light: #5790e6; /* light blue accent / focus ring */
+      --accent-teal: #0b6e97; /* blue court caption tint */
+      --surface: #f4f4f4;     /* off-white section bg */
+      --surface-card: #ffffff;
+      --ink: #0a0a0a;         /* near-black headings */
+      --ink-soft: #717784;    /* muted body */
+      --ghost: #d7dae1;       /* oversized ghost text */
+      --hairline: #e6e8ec;    /* subtle borders */
+      --on-brand: #ffffff;    /* text on navy */
+      /* radii */
+      --radius-card: 1.5rem;
+      --radius-card-lg: 2rem;
+      --radius-pill: 62.5rem;
+    }
+
+    /* Adaptive REM Grid */
+    html {
+      font-size: 16px;
+      scroll-behavior: auto;
+    }
+    @media (max-width: 1920px) { html { font-size: 0.833333vw; } }
+    @media (max-width: 1440px) { html { font-size: 1.111111vw; } }
+    @media (max-width: 1024px) { html { font-size: 1.5625vw;  } }
+    @media (max-width: 640px)  { html { font-size: 4.444444vw; } }
+
+    body {
+      min-height: 100vh;
+      background: #ffffff;
+      color: var(--foreground);
+      font-family: "Onest", system-ui, -apple-system, sans-serif;
+      font-weight: 400;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--brand-light);
+      outline-offset: 2px;
+    }
+
+    /* Frame padding */
+    main {
+      width: 100%;
+      overflow-x: clip;
+      padding: 0.5rem;
+    }
+    @media (min-width: 640px) {
+      main {
+        padding: 0.75rem;
+      }
+    }
+
+    /* Common layout helpers */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .items-end { align-items: flex-end; }
+    .items-stretch { align-items: stretch; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .justify-end { justify-content: flex-end; }
+    .flex-1 { flex: 1 1 0%; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .inset-0 { inset: 0; }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .overflow-hidden { overflow: hidden; }
+
+    /* Typography */
+    .font-medium { font-weight: 500; }
+    .uppercase { text-transform: uppercase; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .tracking-wide { letter-spacing: 0.05em; }
+    .tracking-wider { letter-spacing: 0.12em; }
+    .tracking-widest { letter-spacing: 0.22em; }
+    .leading-none { line-height: 0.85; }
+
+    /* Clip-mask wrap primitives */
+    .clip-line-box {
+      overflow: hidden;
+      display: block;
+      padding-bottom: 0.14em;
+    }
+    .clip-word-box {
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: top;
+      padding-bottom: 0.12em;
+    }
+    .clip-inner {
+      display: inline-block;
+      transform: translateY(115%);
+      opacity: 0;
+      transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+      will-change: transform, opacity;
+    }
+    .clip-inner.revealed {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* In-view spring transition */
+    .inview-node {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+      will-change: transform, opacity;
+    }
+    .inview-node.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Shared UI Components */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+    }
+    .eyebrow-dot {
+      width: 0.375rem;
+      height: 0.375rem;
+      border-radius: var(--radius-pill);
+    }
+    .eyebrow.dark {
+      color: var(--ink-soft);
+    }
+    .eyebrow.dark .eyebrow-dot {
+      background: var(--brand);
+    }
+    .eyebrow.light {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .eyebrow.light .eyebrow-dot {
+      background: var(--brand-light);
+    }
+
+    /* Pill buttons */
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: var(--radius-pill);
+      padding: 0.875rem 1.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .btn-pill svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 769px) {
+      .btn-pill:hover svg {
+        transform: translateX(5px);
+      }
+    }
+    .btn-pill.light {
+      background: #ffffff;
+      color: var(--brand-deep);
+    }
+    @media (min-width: 769px) {
+      .btn-pill.light:hover {
+        background: var(--brand-light);
+        color: #ffffff;
+      }
+    }
+    .btn-pill.solid {
+      background: var(--ink);
+      color: #ffffff;
+    }
+    @media (min-width: 769px) {
+      .btn-pill.solid:hover {
+        background: var(--brand-deep);
+      }
+    }
+    .btn-pill.outline {
+      border: 1px solid currentColor;
+      color: var(--ink);
+    }
+    @media (min-width: 769px) {
+      .btn-pill.outline:hover {
+        background: var(--ink);
+        color: #ffffff;
+      }
+    }
+
+    /* Carousel arrow button */
+    .btn-arrow {
+      width: 3rem;
+      height: 3rem;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius-pill);
+      transition: all 0.2s ease;
+    }
+    @media (min-width: 640px) {
+      .btn-arrow {
+        width: 3.5rem;
+        height: 3.5rem;
+      }
+    }
+    .btn-arrow svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 769px) {
+      .btn-arrow:hover svg {
+        transform: scale(1.15);
+      }
+      .btn-arrow.prev:hover svg {
+        transform: scaleX(-1) scale(1.15);
+      }
+    }
+    .btn-arrow.prev svg {
+      transform: scaleX(-1);
+    }
+    .btn-arrow.outline {
+      border: 1px solid var(--hairline);
+      color: var(--ink);
+    }
+    @media (min-width: 769px) {
+      .btn-arrow.outline:hover {
+        border-color: var(--ink);
+      }
+    }
+    .btn-arrow.solid {
+      background: var(--ink);
+      border: 1px solid var(--ink);
+      color: #ffffff;
+    }
+    @media (min-width: 769px) {
+      .btn-arrow.solid:hover {
+        background: var(--brand-deep);
+      }
+    }
+
+    /* Carousel dots */
+    .carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .dot-item {
+      padding: 0.375rem;
+      display: flex;
+      align-items: center;
+    }
+    .dot-pill {
+      height: 0.375rem;
+      border-radius: var(--radius-pill);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+    }
+    .dot-item[aria-current="true"] .dot-pill {
+      width: 1.25rem;
+    }
+    .dot-item[aria-current="false"] .dot-pill {
+      width: 0.375rem;
+    }
+    .carousel-dots.dark .dot-item[aria-current="true"] .dot-pill {
+      background: var(--ink);
+    }
+    .carousel-dots.dark .dot-item[aria-current="false"] .dot-pill {
+      background: var(--ghost);
+    }
+    .carousel-dots.light .dot-item[aria-current="true"] .dot-pill {
+      background: #ffffff;
+    }
+    .carousel-dots.light .dot-item[aria-current="false"] .dot-pill {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* 1) Loader Curtain */
+    #intro-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--brand-deep);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      transform: translateY(0%);
+      transition: transform 0.85s cubic-bezier(0.65, 0, 0.35, 1);
+      will-change: transform;
+    }
+    #intro-loader.exit {
+      transform: translateY(-105%);
+    }
+    .loader-wordmark {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .loader-wordmark.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .loader-track {
+      width: 10rem;
+      height: 1px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      position: relative;
+    }
+    .loader-fill {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 1.28s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .loader-fill.run {
+      transform: scaleX(1);
+    }
+
+    /* 2) Hero Section */
+    .hero-section {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: var(--brand-deep);
+      color: #ffffff;
+      border-radius: var(--radius-card-lg);
+      height: calc(100svh - 1rem);
+      min-height: 36rem;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (min-width: 640px) {
+      .hero-section {
+        height: calc(100svh - 1.5rem);
+      }
+    }
+    .hero-bg-plate {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -16%;
+      height: 132%;
+      width: 100%;
+      z-index: -10;
+      will-change: transform;
+    }
+    .hero-bg-plate img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-bg-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(15,47,99,0.65), rgba(15,47,99,0.35), rgba(15,47,99,0.75));
+    }
+
+    /* Header in Hero */
+    .site-header {
+      padding: 1.5rem 1.5rem 0;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      z-index: 20;
+    }
+    @media (min-width: 640px) {
+      .site-header {
+        padding: 2rem 2.5rem 0;
+      }
+    }
+    .header-nav {
+      display: none;
+      gap: 2rem;
+      flex: 1;
+    }
+    @media (min-width: 1024px) {
+      .header-nav {
+        display: flex;
+      }
+    }
+    .header-nav a {
+      color: rgba(255, 255, 255, 0.9);
+      transition: color 0.2s;
+    }
+    .header-nav a:hover {
+      color: #ffffff;
+    }
+    .header-brand {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+    @media (min-width: 1024px) {
+      .header-brand {
+        justify-content: center;
+      }
+    }
+    .header-actions {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .header-actions {
+        gap: 1.25rem;
+      }
+    }
+    .btn-visit-link {
+      display: none;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    @media (min-width: 640px) {
+      .btn-visit-link {
+        display: inline-block;
+      }
+    }
+    .btn-visit-link:hover {
+      text-decoration: underline;
+    }
+    .burger-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      transition: background-color 0.2s;
+    }
+    .burger-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .burger-bars {
+      width: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .burger-bar {
+      height: 1px;
+      width: 100%;
+      background: #ffffff;
+    }
+
+    /* Hero Giant Title */
+    .hero-title-wrap {
+      padding: 1rem 1.5rem 0;
+    }
+    @media (min-width: 640px) {
+      .hero-title-wrap {
+        padding: 1rem 2.5rem 0;
+      }
+    }
+    .hero-title {
+      font-size: 12.5vw;
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    /* Hero Bottom Row */
+    .hero-bottom-row {
+      margin-top: auto;
+      padding: 0 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .hero-bottom-row {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding: 0 2.5rem 2.5rem;
+      }
+    }
+    .hero-tagline {
+      font-size: 2.4rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .hero-right-cluster {
+      display: flex;
+      align-items: flex-end;
+      gap: 1rem;
+    }
+
+    /* Collection Slider Card */
+    .collection-slider-box {
+      display: none;
+      width: 16rem;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    @media (min-width: 768px) {
+      .collection-slider-box {
+        display: flex;
+      }
+    }
+    .collection-glass-card {
+      display: flex;
+      gap: 0.75rem;
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.75rem;
+      box-shadow: 0 10px 25px rgba(15, 47, 99, 0.2);
+      backdrop-filter: blur(12px);
+      align-items: center;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .collection-thumb {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 0.75rem;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .collection-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .collection-brand {
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .collection-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .collection-cta {
+      font-size: 0.65rem;
+      text-decoration: underline;
+      margin-top: 0.15rem;
+      color: #ffffff;
+    }
+
+    /* Membership Card */
+    .membership-card {
+      width: 100%;
+      max-width: 20rem;
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.75rem;
+      box-shadow: 0 10px 25px rgba(15, 47, 99, 0.2);
+      backdrop-filter: blur(12px);
+      display: flex;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+    @media (min-width: 640px) {
+      .membership-card {
+        max-width: 15rem;
+      }
+    }
+    .membership-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+    }
+    .membership-val {
+      font-size: 1.875rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .avatar-row {
+      display: flex;
+      align-items: center;
+      margin: 0.35rem 0;
+    }
+    .avatar-dot {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(15, 47, 99, 0.4);
+      margin-right: -0.5rem;
+    }
+    .membership-caption {
+      font-size: 0.65rem;
+      opacity: 0.8;
+    }
+    .membership-photo {
+      width: 4rem;
+      aspect-ratio: 3/4;
+      border-radius: 0.75rem;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* 3) Trust Section */
+    .trust-section {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: var(--background);
+      padding: 4rem 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .trust-section {
+        padding: 5rem 2.5rem;
+      }
+    }
+    .trust-top-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      z-index: 20;
+      position: relative;
+    }
+    @media (min-width: 640px) {
+      .trust-top-row {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+    }
+    .pct-badge {
+      width: 7rem;
+      height: 7rem;
+      border-radius: var(--radius-pill);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    @media (min-width: 640px) {
+      .pct-badge {
+        width: 8rem;
+        height: 8rem;
+      }
+    }
+    .pct-val {
+      font-size: 1.5rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .pct-caption {
+      font-size: 0.6rem;
+      color: var(--ink-soft);
+      max-width: 7em;
+      margin-top: 0.25rem;
+    }
+    .badge-card {
+      max-width: 28rem;
+      border-radius: var(--radius-card);
+      background: var(--surface);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .badge-card {
+        padding: 1.5rem;
+        gap: 1.25rem;
+      }
+    }
+    .index-chip {
+      align-self: flex-start;
+      border-radius: 0.75rem;
+      background: var(--background);
+      padding: 0.5rem 1rem;
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+    .badge-card-title {
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+    .badge-card-body {
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+
+    /* Ghost Heading in Trust */
+    .ghost-heading-wrap {
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+      max-width: 88rem;
+      margin: 3rem auto 0;
+      position: relative;
+    }
+    .ghost-heading {
+      font-size: 8.2vw;
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+    }
+    .ghost-row {
+      display: flex;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .ghost-word {
+      display: inline-block;
+      transition: transform 0.1s linear;
+      will-change: transform;
+    }
+    .ghost-word.ghost {
+      color: var(--ghost);
+    }
+    .ghost-word.ink {
+      color: var(--ink);
+    }
+
+    /* Center Coach Card in Trust */
+    .coach-card-wrap {
+      position: relative;
+      z-index: 10;
+      margin: 2rem auto;
+      width: 13rem;
+      transform: rotate(6deg);
+    }
+    @media (min-width: 640px) {
+      .coach-card-wrap {
+        position: absolute;
+        left: 50%;
+        top: 54%;
+        transform: translate(-50%, -50%) rotate(6deg);
+        width: 16rem;
+        margin: 0;
+      }
+    }
+    .coach-figure {
+      aspect-ratio: 3/4;
+      border-radius: var(--radius-card);
+      background: var(--brand);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    .coach-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.35s ease;
+    }
+    .coach-glass-caption {
+      position: absolute;
+      inset: auto 0.75rem 0.75rem 0.75rem;
+      border-radius: 0.75rem;
+      background: rgba(15, 47, 99, 0.4);
+      color: #ffffff;
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .coach-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .coach-role {
+      font-size: 0.65rem;
+      opacity: 0.8;
+    }
+
+    /* Trust Carousel Controls */
+    .trust-controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 3rem;
+      z-index: 20;
+      position: relative;
+    }
+    @media (min-width: 640px) {
+      .trust-controls-row {
+        margin-top: 6rem;
+      }
+    }
+
+    /* 4) Programs Section */
+    .programs-section {
+      background: var(--surface);
+      padding: 6rem 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .programs-section {
+        padding: 6rem 2.5rem;
+      }
+    }
+    .programs-title {
+      font-size: 3rem;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-top: 1rem;
+    }
+    .programs-list {
+      margin-top: 3.5rem;
+    }
+    .program-row-link {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.75rem 0;
+      border-top: 1px solid var(--hairline);
+      transition: background-color 0.2s;
+    }
+    .program-row-link:last-child {
+      border-bottom: 1px solid var(--hairline);
+    }
+    .program-row-link:focus-visible {
+      background: var(--background);
+    }
+    .program-idx {
+      width: 2.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink-soft);
+      flex-shrink: 0;
+    }
+    .program-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .program-name {
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+    @media (min-width: 640px) {
+      .program-name {
+        font-size: 1.875rem;
+      }
+    }
+    .program-desc {
+      font-size: 0.875rem;
+      color: var(--ink-soft);
+    }
+    .program-arrow-circle {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--hairline);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .program-arrow-circle svg {
+      opacity: 0.55;
+      transform: translateX(0);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    }
+    @media (min-width: 769px) {
+      .program-row-link:hover .program-arrow-circle svg {
+        opacity: 1;
+        transform: translateX(8px);
+      }
+    }
+
+    /* 5) Facilities Section */
+    .facilities-section {
+      background: var(--background);
+      border-radius: var(--radius-card-lg);
+      margin-top: -2.5rem;
+      padding: 4rem 1.5rem 5rem;
+      position: relative;
+      z-index: 10;
+    }
+    @media (min-width: 640px) {
+      .facilities-section {
+        padding: 4rem 2.5rem 5rem;
+      }
+    }
+    .facilities-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      align-items: flex-end;
+    }
+    @media (min-width: 768px) {
+      .facilities-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .facilities-intro {
+      max-width: 24rem;
+    }
+    .facilities-intro-img {
+      width: 4rem;
+      height: 4rem;
+      border-radius: var(--radius-card);
+      object-fit: cover;
+    }
+    .facilities-title {
+      font-size: 3rem;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-top: 1.5rem;
+    }
+    .facilities-body {
+      font-size: 0.875rem;
+      color: var(--ink-soft);
+      max-width: 20rem;
+      margin-top: 1.5rem;
+      line-height: 1.5;
+    }
+    .court-cards-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 1.25rem;
+    }
+    .court-card-figure {
+      flex: 1;
+      aspect-ratio: 3/4;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      background: var(--surface);
+      position: relative;
+    }
+    .court-card-figure.stagger-down {
+      margin-bottom: 2rem;
+    }
+    .court-card-figure img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 769px) {
+      .court-card-figure:hover img {
+        transform: scale(1.03);
+      }
+    }
+    .court-glass-caption {
+      position: absolute;
+      inset: auto 0.75rem 0.75rem 0.75rem;
+      border-radius: 0.75rem;
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .court-glass-caption.clay {
+      background: rgba(15, 47, 99, 0.4);
+    }
+    .court-glass-caption.blue {
+      background: rgba(11, 110, 151, 0.55);
+    }
+    .court-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .court-desc {
+      font-size: 0.65rem;
+      opacity: 0.85;
+    }
+
+    /* 6) Stats Section */
+    .stats-section {
+      background: var(--brand-deep);
+      color: #ffffff;
+      border-radius: var(--radius-card-lg);
+      margin-top: 0.75rem;
+      padding: 5rem 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .stats-section {
+        padding: 5rem 2.5rem;
+      }
+    }
+    .stats-title {
+      font-size: 3rem;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-top: 1rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 2rem;
+      row-gap: 3rem;
+      margin-top: 4rem;
+    }
+    @media (min-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .stat-cell {
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      padding-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-value {
+      font-size: 3.75rem;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+    }
+    @media (min-width: 640px) {
+      .stat-value {
+        font-size: 4.5rem;
+      }
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 0.75rem;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* 7) Testimonials Section */
+    .testimonials-section {
+      background: var(--background);
+      padding: 5rem 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .testimonials-section {
+        padding: 6rem 2.5rem;
+      }
+    }
+    .testimonials-title {
+      font-size: 3rem;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-top: 1rem;
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-top: 3.5rem;
+    }
+    @media (min-width: 768px) {
+      .testimonials-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .testimonial-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      border-radius: var(--radius-card);
+      background: var(--surface);
+      padding: 1.75rem;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 769px) {
+      .testimonial-card:hover {
+        transform: translateY(-8px);
+      }
+    }
+    .quote-glyph {
+      font-size: 2.25rem;
+      color: var(--brand);
+      line-height: 1;
+    }
+    .testimonial-text {
+      font-size: 1.125rem;
+      line-height: 1.5;
+      color: var(--ink);
+      margin-top: 1rem;
+    }
+    .testimonial-caption {
+      border-top: 1px solid var(--hairline);
+      padding-top: 1rem;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .author-name {
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .author-role {
+      font-size: 0.875rem;
+      color: var(--ink-soft);
+      font-style: italic;
+    }
+
+    /* 8) Footer */
+    .site-footer {
+      background: var(--brand-deep);
+      color: #ffffff;
+      border-radius: var(--radius-card-lg);
+      margin-top: 0.75rem;
+      padding: 3.5rem 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .site-footer {
+        padding: 4rem 2.5rem;
+      }
+    }
+    .footer-cta-band {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 3.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .footer-cta-band {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+    }
+    .footer-cta-heading {
+      font-size: 3.75rem;
+      font-weight: 500;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      margin-top: 1rem;
+    }
+    .footer-cols-grid {
+      padding: 3.5rem 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    @media (min-width: 768px) {
+      .footer-cols-grid {
+        grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      }
+    }
+    .footer-brand-col {
+      max-width: 20rem;
+    }
+    .footer-blurb {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+    .footer-address {
+      font-style: normal;
+      margin-top: 1.5rem;
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .footer-address a {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .footer-address a:hover {
+      text-decoration: underline;
+    }
+    .footer-addr-line {
+      color: rgba(255, 255, 255, 0.55);
+    }
+    .footer-col-title {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 1rem;
+    }
+    .footer-link-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .footer-link-list a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 2rem;
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    @media (min-width: 640px) {
+      .footer-bottom-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+    .footer-nav-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+    .footer-nav-links a:hover {
+      color: #ffffff;
+    }
+
+    /* Fullscreen Menu Overlay */
+    #menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: flex;
+      flex-direction: column;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    #menu-overlay.open {
+      pointer-events: auto;
+      opacity: 1;
+    }
+    .menu-backdrop {
+      position: absolute;
+      inset: 0;
+      background: var(--brand-deep);
+    }
+    .menu-panel {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #ffffff;
+      padding: 0.5rem;
+      transform: translateY(-24px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 640px) {
+      .menu-panel {
+        padding: 0.75rem;
+      }
+    }
+    #menu-overlay.open .menu-panel {
+      transform: translateY(0);
+    }
+    .menu-inner {
+      padding: 1.5rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    @media (min-width: 640px) {
+      .menu-inner {
+        padding: 2.5rem;
+      }
+    }
+    .menu-close-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.15);
+      display: grid;
+      place-items: center;
+      transition: background-color 0.2s;
+    }
+    .menu-close-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .menu-close-btn svg {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 769px) {
+      .menu-close-btn:hover svg {
+        transform: rotate(90deg);
+      }
+    }
+    .menu-nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .menu-link-item {
+      font-size: 3rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      transition: color 0.2s;
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s;
+    }
+    @media (min-width: 640px) {
+      .menu-link-item {
+        font-size: 4.5rem;
+      }
+    }
+    .menu-link-item:hover {
+      color: var(--brand-light);
+    }
+    #menu-overlay.open .menu-link-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .menu-bottom-row {
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .menu-bottom-row {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    /* Contact & Live Concurrency Booking Modal */
+    #contact-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0.75rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    @media (min-width: 640px) {
+      #contact-modal {
+        align-items: center;
+        padding: 1.5rem;
+      }
+    }
+    #contact-modal.open {
+      pointer-events: auto;
+      opacity: 1;
+    }
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 47, 99, 0.5);
+      backdrop-filter: blur(8px);
+    }
+    .modal-panel {
+      position: relative;
+      width: 100%;
+      max-width: 36rem;
+      max-height: 92svh;
+      overflow-y: auto;
+      border-radius: var(--radius-card-lg);
+      background: var(--surface-card);
+      padding: 1.5rem;
+      color: var(--ink);
+      box-shadow: 0 25px 50px -12px rgba(15, 47, 99, 0.35);
+      transform: translateY(28px) scale(0.96);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 640px) {
+      .modal-panel {
+        padding: 2rem;
+      }
+    }
+    #contact-modal.open .modal-panel {
+      transform: translateY(0) scale(1);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .modal-close-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: var(--radius-pill);
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      transition: background-color 0.2s;
+    }
+    .modal-close-btn:hover {
+      background: var(--hairline);
+    }
+    .modal-close-btn svg {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 769px) {
+      .modal-close-btn:hover svg {
+        transform: rotate(90deg);
+      }
+    }
+    .modal-title {
+      font-size: 2.25rem;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-top: 0.75rem;
+    }
+    @media (min-width: 640px) {
+      .modal-title {
+        font-size: 3rem;
+      }
+    }
+
+    /* Modal Tabs (Contact vs Live Concurrency Engine) */
+    .modal-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      background: var(--surface);
+      padding: 0.25rem;
+      border-radius: 0.75rem;
+    }
+    .modal-tab-btn {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+    }
+    .modal-tab-btn.active {
+      background: #ffffff;
+      color: var(--brand-deep);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    /* Form Fields */
+    .modal-form {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--ink-soft);
+    }
+    .form-input, .form-textarea {
+      width: 100%;
+      border-radius: 0.75rem;
+      border: 1px solid var(--hairline);
+      background: var(--background);
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--brand-light);
+      box-shadow: 0 0 0 3px rgba(87, 144, 230, 0.15);
+      outline: none;
+    }
+    .form-submit-btn {
+      border-radius: var(--radius-pill);
+      background: var(--ink);
+      color: #ffffff;
+      padding: 0.875rem 1.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: background-color 0.2s, opacity 0.2s;
+      align-self: flex-start;
+      margin-top: 0.5rem;
+    }
+    .form-submit-btn:hover {
+      background: var(--brand-deep);
+    }
+    .form-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Modal Success Panel */
+    .modal-success-panel {
+      margin-top: 2rem;
+      border-radius: var(--radius-card);
+      background: var(--surface);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .success-icon-circle {
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--radius-pill);
+      background: var(--brand);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+    }
+    .success-title {
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+    .success-subtext {
+      font-size: 0.875rem;
+      color: var(--ink-soft);
+      max-width: 20rem;
+    }
+
+    /* Interactive Concurrency / Court Reservation Engine Styles */
+    .concurrency-box {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .ttl-bar {
+      border-radius: 0.75rem;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #92400e;
+    }
+    .court-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    .court-slot-btn {
+      padding: 0.75rem 0.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .court-slot-btn.avail {
+      border-color: #a7f3d0;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+    .court-slot-btn.held {
+      border-color: #fde68a;
+      background: #fffbeb;
+      color: #92400e;
+      cursor: not-allowed;
+    }
+    .court-slot-btn.selected {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: #ffffff;
+      transform: scale(1.04);
+    }
+    .court-slot-btn.booked {
+      border-color: var(--hairline);
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+    .sim-stress-box {
+      border-radius: 0.75rem;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 1rem;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1) INTRO LOADER CURTAIN -->
+  <aside id="intro-loader" aria-label="Loading Baseline">
+    <div class="loader-wordmark" id="loader-wordmark">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M4.8 5.6A9 9 0 0 0 4.8 18.4"/>
+        <path d="M19.2 5.6a9 9 0 0 1 0 12.8"/>
+      </svg>
+      <span>Baseline</span>
+    </div>
+    <div class="loader-track">
+      <div class="loader-fill" id="loader-fill"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN SCROLL CONTAINER -->
+  <main>
+
+    <!-- 2) HERO SECTION -->
+    <section class="hero-section">
+      <!-- Parallax Background Plate -->
+      <div class="hero-bg-plate" id="hero-plate">
+        <img 
+          src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/hero/hero-court.webp" 
+          alt="Player lunging for a shot on a hard court"
+          fetchpriority="high"
+          loading="eager"
+        >
+        <div class="hero-bg-gradient"></div>
+      </div>
+
+      <!-- Site Header (Inside Hero) -->
+      <header class="site-header">
+        <nav class="header-nav" aria-label="Primary navigation">
+          <a href="#programs">Programs &amp; Coaches</a>
+          <a href="#facilities">Club &amp; Events</a>
+        </nav>
+        <div class="header-brand">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M4.8 5.6A9 9 0 0 0 4.8 18.4"/>
+            <path d="M19.2 5.6a9 9 0 0 1 0 12.8"/>
+          </svg>
+          <span>Baseline</span>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="btn-visit-link" onclick="openContactModal()">Book a Visit</button>
+          <button type="button" class="burger-btn" onclick="openMenuOverlay()" aria-label="Open menu">
+            <div class="burger-bars">
+              <span class="burger-bar"></span>
+              <span class="burger-bar"></span>
+            </div>
+          </button>
+        </div>
+      </header>
+
+      <!-- Giant Title -->
+      <div class="hero-title-wrap">
+        <h1 class="hero-title" id="hero-title">
+          <span class="clip-word-box"><span class="clip-inner hero-word">Own</span></span>
+          <span class="clip-word-box"><span class="clip-inner hero-word">The</span></span>
+          <span class="clip-word-box"><span class="clip-inner hero-word">Court</span></span>
+        </h1>
+      </div>
+
+      <!-- Bottom Row: Tagline + Right Cluster -->
+      <div class="hero-bottom-row">
+        <p class="hero-tagline">
+          <span class="clip-line-box"><span class="clip-inner hero-line">Show Up,</span></span>
+          <span class="clip-line-box"><span class="clip-inner hero-line">Level Up</span></span>
+        </p>
+
+        <div class="hero-right-cluster">
+          <!-- Collection Slider -->
+          <div class="collection-slider-box inview-node" id="hero-collection-box">
+            <div class="collection-glass-card" id="collection-card">
+              <img id="col-img" class="collection-thumb" src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/2.webp" alt="Player driving a backhand on a hard court">
+              <div class="collection-info">
+                <span id="col-brand" class="collection-brand">Baseline Pro</span>
+                <span id="col-title" class="collection-title">Featured Gear</span>
+                <a id="col-cta" href="#programs" class="collection-cta">Shop the kit &rarr;</a>
+              </div>
+            </div>
+            <div class="carousel-dots light" id="hero-dots">
+              <button type="button" class="dot-item" aria-current="true" onclick="setCollectionSlide(0)"><span class="dot-pill"></span></button>
+              <button type="button" class="dot-item" aria-current="false" onclick="setCollectionSlide(1)"><span class="dot-pill"></span></button>
+              <button type="button" class="dot-item" aria-current="false" onclick="setCollectionSlide(2)"><span class="dot-pill"></span></button>
+            </div>
+          </div>
+
+          <!-- Membership Card -->
+          <article class="membership-card inview-node" id="hero-membership-card">
+            <div class="membership-left">
+              <span class="membership-val">9K+</span>
+              <div class="avatar-row">
+                <span class="avatar-dot" style="background:#5790e6"></span>
+                <span class="avatar-dot" style="background:#c2e029"></span>
+                <span class="avatar-dot" style="background:#0b6e97"></span>
+                <span class="avatar-dot" style="background:#ffffff"></span>
+              </div>
+              <span class="membership-caption">Members on court</span>
+            </div>
+            <img class="membership-photo" src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/1.webp" alt="Player waiting to return on a clay court" loading="lazy">
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3) TRUST SECTION -->
+    <section class="trust-section" id="coaches">
+      <!-- Top Badges Row -->
+      <div class="trust-top-row">
+        <div class="pct-badge inview-node">
+          <span class="pct-val">100%</span>
+          <span class="pct-caption">Coaching built around your game</span>
+        </div>
+
+        <article class="badge-card inview-node">
+          <span class="index-chip">#01</span>
+          <h3 class="badge-card-title">Trusted by serious players</h3>
+          <p class="badge-card-body">From first-timers to nationally ranked juniors, players train here because the progress shows up on the scoreboard.</p>
+        </article>
+      </div>
+
+      <!-- Oversized Ghost Heading -->
+      <div class="ghost-heading-wrap" aria-hidden="true">
+        <h2 class="ghost-heading" id="trust-title">
+          <div class="ghost-row">
+            <span class="ghost-word ghost" id="gw-1">Expert</span>
+            <span class="ghost-word ghost" id="gw-2">Result-</span>
+          </div>
+          <div class="ghost-row">
+            <span class="ghost-word ink" id="gw-3">Driven</span>
+            <span class="ghost-word ghost" id="gw-4">Coaching</span>
+          </div>
+        </h2>
+      </div>
+
+      <!-- Center Rotating Coach Card -->
+      <div class="coach-card-wrap inview-node" id="trust-coach-card">
+        <figure class="coach-figure">
+          <img id="coach-photo" class="coach-photo" src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/5.webp" alt="Head coach set in a ready stance on clay" loading="lazy">
+          <figcaption class="coach-glass-caption">
+            <span id="coach-name" class="coach-name">Marco Vidal</span>
+            <span id="coach-role" class="coach-role">Head Coach</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Controls Row: Arrows & Dots -->
+      <div class="trust-controls-row">
+        <button type="button" class="btn-arrow outline prev" onclick="cycleTrustSlide(-1)" aria-label="Previous coach">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </button>
+
+        <div class="carousel-dots dark" id="trust-dots">
+          <button type="button" class="dot-item" aria-current="true" onclick="setTrustSlide(0)"><span class="dot-pill"></span></button>
+          <button type="button" class="dot-item" aria-current="false" onclick="setTrustSlide(1)"><span class="dot-pill"></span></button>
+          <button type="button" class="dot-item" aria-current="false" onclick="setTrustSlide(2)"><span class="dot-pill"></span></button>
+        </div>
+
+        <button type="button" class="btn-arrow solid next" onclick="cycleTrustSlide(1)" aria-label="Next coach">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- 4) PROGRAMS SECTION -->
+    <section class="programs-section" id="programs">
+      <div class="eyebrow dark">
+        <span class="eyebrow-dot"></span>
+        <span>Training programs</span>
+      </div>
+
+      <h2 class="programs-title" id="programs-title">
+        <span class="clip-line-box"><span class="clip-inner prog-line">Built for</span></span>
+        <span class="clip-line-box"><span class="clip-inner prog-line">every level</span></span>
+      </h2>
+
+      <ul class="programs-list">
+        <li>
+          <a href="#junior" class="program-row-link inview-node">
+            <span class="program-idx">01</span>
+            <div class="program-content">
+              <span class="program-name">Junior Development</span>
+              <span class="program-desc">Fundamentals, footwork, and match play for ages 6–14.</span>
+            </div>
+            <div class="program-arrow-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="#performance" class="program-row-link inview-node">
+            <span class="program-idx">02</span>
+            <div class="program-content">
+              <span class="program-name">Performance Squad</span>
+              <span class="program-desc">High-volume training for competitive and ranked players.</span>
+            </div>
+            <div class="program-arrow-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="#adult" class="program-row-link inview-node">
+            <span class="program-idx">03</span>
+            <div class="program-content">
+              <span class="program-name">Adult Clinics</span>
+              <span class="program-desc">Small-group sessions to sharpen technique and fitness.</span>
+            </div>
+            <div class="program-arrow-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="#private" class="program-row-link inview-node">
+            <span class="program-idx">04</span>
+            <div class="program-content">
+              <span class="program-name">Private Coaching</span>
+              <span class="program-desc">One-to-one sessions tailored to your goals and schedule.</span>
+            </div>
+            <div class="program-arrow-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 5) FACILITIES SECTION (Overlaps up -mt-10) -->
+    <section class="facilities-section" id="facilities">
+      <div class="facilities-grid">
+        <!-- Intro Column -->
+        <div class="facilities-intro">
+          <img class="facilities-intro-img inview-node" src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/3.webp" alt="Player stretching for a forehand on clay" loading="lazy">
+          <h2 class="facilities-title" id="facilities-title">
+            <span class="clip-line-box"><span class="clip-inner fac-line">Tour Our</span></span>
+            <span class="clip-line-box"><span class="clip-inner fac-line">World-Class</span></span>
+            <span class="clip-line-box"><span class="clip-inner fac-line">Courts</span></span>
+          </h2>
+          <p class="facilities-body inview-node" id="facilities-body">
+            Reserve a court for focused practice, squad drills, or private sessions — and train in the same conditions you'll compete in.
+          </p>
+        </div>
+
+        <!-- Court Cards -->
+        <div class="court-cards-row">
+          <figure class="court-card-figure inview-node">
+            <img src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/1.webp" alt="Player on the baseline of an outdoor clay court" loading="lazy">
+            <figcaption class="court-glass-caption clay">
+              <span class="court-name">Redline Clay</span>
+              <span class="court-desc">A fast outdoor clay court tuned for long, physical rallies.</span>
+            </figcaption>
+          </figure>
+
+          <figure class="court-card-figure stagger-down inview-node">
+            <img src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/4.webp" alt="Player following through on a blue hard court" loading="lazy">
+            <figcaption class="court-glass-caption blue">
+              <span class="court-name">Harbor Court</span>
+              <span class="court-desc">A sheltered hard court built for precision and night play.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6) STATS SECTION -->
+    <section class="stats-section">
+      <div class="eyebrow light">
+        <span class="eyebrow-dot"></span>
+        <span>By the numbers</span>
+      </div>
+
+      <h2 class="stats-title" id="stats-title">
+        <span class="clip-line-box"><span class="clip-inner stat-line">A club that</span></span>
+        <span class="clip-line-box"><span class="clip-inner stat-line">keeps score</span></span>
+      </h2>
+
+      <dl class="stats-grid">
+        <div class="stat-cell inview-node">
+          <dt class="sr-only">Certified coaches</dt>
+          <dd class="stat-value">24</dd>
+          <dd class="stat-label">Certified coaches</dd>
+        </div>
+        <div class="stat-cell inview-node">
+          <dt class="sr-only">Championship courts</dt>
+          <dd class="stat-value">12</dd>
+          <dd class="stat-label">Championship courts</dd>
+        </div>
+        <div class="stat-cell inview-node">
+          <dt class="sr-only">Members training</dt>
+          <dd class="stat-value">9K+</dd>
+          <dd class="stat-label">Members training</dd>
+        </div>
+        <div class="stat-cell inview-node">
+          <dt class="sr-only">Years on the baseline</dt>
+          <dd class="stat-value">15</dd>
+          <dd class="stat-label">Years on the baseline</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- 7) TESTIMONIALS SECTION -->
+    <section class="testimonials-section" id="testimonials">
+      <div class="eyebrow dark">
+        <span class="eyebrow-dot"></span>
+        <span>What players say</span>
+      </div>
+
+      <h2 class="testimonials-title" id="testimonials-title">
+        <span class="clip-line-box"><span class="clip-inner test-line">Loved by</span></span>
+        <span class="clip-line-box"><span class="clip-inner test-line">the locker room</span></span>
+      </h2>
+
+      <ul class="testimonials-grid">
+        <li class="inview-node">
+          <div class="testimonial-card">
+            <div>
+              <span class="quote-glyph">&ldquo;</span>
+              <blockquote class="testimonial-text">I added a level to my serve in one season. The coaching is detailed and it actually sticks.</blockquote>
+            </div>
+            <figcaption class="testimonial-caption">
+              <span class="author-name">Priya Anand</span>
+              <span class="author-role">Performance Squad</span>
+            </figcaption>
+          </div>
+        </li>
+        <li class="inview-node">
+          <div class="testimonial-card">
+            <div>
+              <span class="quote-glyph">&ldquo;</span>
+              <blockquote class="testimonial-text">Best courts in the city and a team that treats every member like a competitor.</blockquote>
+            </div>
+            <figcaption class="testimonial-caption">
+              <span class="author-name">Lukas Brenner</span>
+              <span class="author-role">Adult Clinics</span>
+            </figcaption>
+          </div>
+        </li>
+        <li class="inview-node">
+          <div class="testimonial-card">
+            <div>
+              <span class="quote-glyph">&ldquo;</span>
+              <blockquote class="testimonial-text">My daughter went from shy beginner to club champion. Worth every minute.</blockquote>
+            </div>
+            <figcaption class="testimonial-caption">
+              <span class="author-name">Dana Okafor</span>
+              <span class="author-role">Parent, Junior Development</span>
+            </figcaption>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 8) FOOTER -->
+    <footer class="site-footer" id="contact">
+      <!-- CTA Band -->
+      <div class="footer-cta-band">
+        <div>
+          <div class="eyebrow light">
+            <span class="eyebrow-dot"></span>
+            <span>Get started</span>
+          </div>
+          <p class="footer-cta-heading">
+            <span class="clip-line-box"><span class="clip-inner footer-line">Ready to</span></span>
+            <span class="clip-line-box"><span class="clip-inner footer-line">play?</span></span>
+          </p>
+        </div>
+
+        <button type="button" class="btn-pill light inview-node" onclick="openContactModal()">
+          <span>Book a Visit</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Columns Grid -->
+      <div class="footer-cols-grid">
+        <div class="footer-brand-col">
+          <div class="flex items-center gap-2" style="font-size:1.125rem; font-weight:500; text-transform:uppercase; letter-spacing:0.2em;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M4.8 5.6A9 9 0 0 0 4.8 18.4"/>
+              <path d="M19.2 5.6a9 9 0 0 1 0 12.8"/>
+            </svg>
+            <span>Baseline</span>
+          </div>
+          <p class="footer-blurb">A members' tennis club and academy where focused coaching meets championship courts.</p>
+          <address class="footer-address">
+            <a href="mailto:play@baseline.club">play@baseline.club</a>
+            <a href="tel:+12125550148">+1 (212) 555-0148</a>
+            <span class="footer-addr-line">120 Court Lane, New York</span>
+          </address>
+        </div>
+
+        <nav aria-label="Programs links">
+          <h4 class="footer-col-title">Programs</h4>
+          <ul class="footer-link-list">
+            <li><a href="#junior">Junior Development</a></li>
+            <li><a href="#performance">Performance Squad</a></li>
+            <li><a href="#adult">Adult Clinics</a></li>
+            <li><a href="#private">Private Coaching</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Club links">
+          <h4 class="footer-col-title">Club</h4>
+          <ul class="footer-link-list">
+            <li><a href="#membership">Membership</a></li>
+            <li><a href="#facilities">Facilities</a></li>
+            <li><a href="#club">Events</a></li>
+            <li><a href="#shop">Pro Shop</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Company links">
+          <h4 class="footer-col-title">Company</h4>
+          <ul class="footer-link-list">
+            <li><a href="#about">About</a></li>
+            <li><a href="#coaches">Coaches</a></li>
+            <li><a href="#careers">Careers</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <span>&copy; 2026 Baseline Tennis Club. All rights reserved.</span>
+
+        <nav class="footer-nav-links" aria-label="Social media">
+          <a href="#instagram">Instagram</a>
+          <a href="#x">X</a>
+          <a href="#youtube">YouTube</a>
+          <a href="#linkedin">LinkedIn</a>
+        </nav>
+
+        <nav class="footer-nav-links" aria-label="Legal">
+          <a href="#privacy">Privacy</a>
+          <a href="#terms">Terms</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- FULLSCREEN MENU OVERLAY -->
+  <div id="menu-overlay" aria-hidden="true">
+    <div class="menu-backdrop" onclick="closeMenuOverlay()"></div>
+    <div class="menu-panel">
+      <div class="menu-inner">
+        <!-- Top Row -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2" style="font-size:1rem; font-weight:500; text-transform:uppercase; letter-spacing:0.2em;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M4.8 5.6A9 9 0 0 0 4.8 18.4"/>
+              <path d="M19.2 5.6a9 9 0 0 1 0 12.8"/>
+            </svg>
+            <span>Baseline</span>
+          </div>
+          <button type="button" class="menu-close-btn" onclick="closeMenuOverlay()" aria-label="Close menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 6l12 12M18 6L6 18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Center Nav -->
+        <nav class="menu-nav-links" aria-label="Mobile navigation">
+          <a href="#programs" class="menu-link-item" onclick="closeMenuOverlay()">Programs</a>
+          <a href="#facilities" class="menu-link-item" onclick="closeMenuOverlay()">Facilities</a>
+          <a href="#testimonials" class="menu-link-item" onclick="closeMenuOverlay()">Reviews</a>
+          <a href="#contact" class="menu-link-item" onclick="closeMenuOverlay()">Contact</a>
+        </nav>
+
+        <!-- Bottom Row -->
+        <div class="menu-bottom-row">
+          <button type="button" class="btn-pill light" onclick="closeMenuOverlay(); openContactModal();">
+            <span>Book a Visit</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </button>
+          <div class="flex gap-4" style="font-size:0.875rem; color:rgba(255,255,255,0.7);">
+            <a href="#instagram">Instagram</a>
+            <a href="#x">X</a>
+            <a href="#youtube">YouTube</a>
+            <a href="#linkedin">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT & LIVE CONCURRENCY ENGINE MODAL -->
+  <div id="contact-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" onclick="closeContactModal()"></div>
+    <div class="modal-panel">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div>
+          <div class="eyebrow dark">
+            <span class="eyebrow-dot"></span>
+            <span>Book a visit &amp; courts</span>
+          </div>
+          <h2 class="modal-title">
+            <span class="clip-line-box"><span class="clip-inner modal-line">Come see</span></span>
+            <span class="clip-line-box"><span class="clip-inner modal-line">the courts</span></span>
+          </h2>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeContactModal()" aria-label="Close dialog">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tabs Switcher -->
+      <div class="modal-tabs">
+        <button type="button" class="modal-tab-btn active" id="tab-inquiry" onclick="switchModalTab('inquiry')">Visit Inquiry</button>
+        <button type="button" class="modal-tab-btn" id="tab-engine" onclick="switchModalTab('engine')">Live Concurrency Engine</button>
+      </div>
+
+      <!-- Tab 1: Visit Form -->
+      <div id="panel-inquiry">
+        <form class="modal-form" id="visit-form" onsubmit="handleVisitSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="inp-name">Full name</label>
+            <input class="form-input" id="inp-name" type="text" placeholder="Alex Rivera" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inp-email">Email</label>
+            <input class="form-input" id="inp-email" type="email" placeholder="you@email.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inp-message">What would you like to play?</label>
+            <textarea class="form-textarea" id="inp-message" rows="3" placeholder="I'd love to try a private lesson on the clay courts…"></textarea>
+          </div>
+          <button type="submit" class="form-submit-btn" id="btn-submit-visit">Request a visit</button>
+        </form>
+
+        <div class="modal-success-panel" id="modal-success" style="display:none;">
+          <div class="success-icon-circle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h3 class="success-title">Request received</h3>
+          <p class="success-subtext" id="success-message">Thanks, Alex — our team will be in touch to lock in your visit.</p>
+          <button type="button" class="btn-pill solid" onclick="closeContactModal()">Done</button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Live Concurrency & Court Reservation Engine (AtomicSeat) -->
+      <div id="panel-engine" style="display:none;">
+        <div class="concurrency-box">
+          <div class="ttl-bar">
+            <span><strong>Redis Ephemeral Lock:</strong> 5-Min TTL Hold</span>
+            <span id="demo-ttl" style="font-family:monospace; font-weight:bold;">05:00</span>
+          </div>
+
+          <div>
+            <span class="form-label">Select Court Slot (Live Atomic Hold)</span>
+            <div class="court-grid" style="margin-top:0.5rem;" id="court-grid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="sim-stress-box">
+            <div class="flex items-center justify-between">
+              <strong>High-Concurrency Bot Burst (50k Simulation)</strong>
+              <span id="sim-ver" style="font-family:monospace;">DB v1 (Optimistic)</span>
+            </div>
+            <p style="color:#166534;">Simulate 50 concurrent bots attacking Court Center #1 at the exact same millisecond:</p>
+            <div class="flex gap-2">
+              <button type="button" class="btn-pill outline" style="font-size:0.75rem; padding:0.5rem 1rem;" onclick="runStressSimulation('naive')">Test Naive CRUD</button>
+              <button type="button" class="btn-pill solid" style="font-size:0.75rem; padding:0.5rem 1rem;" onclick="runStressSimulation('atomic')">Test AtomicSeat</button>
+            </div>
+            <div id="sim-status" style="margin-top:0.5rem; font-family:monospace; font-size:0.75rem; color:#0f172a;"></div>
+          </div>
+
+          <p style="font-size:0.75rem; color:var(--ink-soft); line-height:1.4;">
+            <strong>IKGPTU Mohali Major Project:</strong> Mrs. Manpreet &bull; Sparsh Gupta (2328066), Manpreet Singh (2328040), Kamaldeep Singh (2328030).
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT ENGINE -->
+  <script type="module">
+    import Lenis from 'lenis';
+
+    // 1) Smooth Scroll Init
+    const lenis = new Lenis({
+      smoothWheel: true,
+      duration: 1.2
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Initial scroll reset
+    window.scrollTo(0, 0);
+
+    // 2) Adaptive REM Scale-Up (>1920px)
+    function handleAdaptiveScale() {
+      const FONT_BASE = 16, BASE_W = 1920, COEF = 0.6666;
+      const reduction = ((BASE_W - window.innerWidth) / BASE_W) * 100 * COEF;
+      const size = FONT_BASE - (FONT_BASE * reduction) / 100;
+      if (size > FONT_BASE) {
+        document.documentElement.style.fontSize = size + "px";
+      } else {
+        document.documentElement.style.removeProperty("font-size");
+      }
+    }
+    window.addEventListener('resize', handleAdaptiveScale);
+    handleAdaptiveScale();
+
+    // 3) Loader Timing & Hero Reveal Logic
+    const MIN_VISIBLE_MS = 1400;
+    const MAX_VISIBLE_MS = 2600;
+    const EXIT_MS = 850;
+
+    let loaderDone = false;
+    lenis.stop();
+    document.documentElement.style.overflow = "hidden";
+
+    // Start progress fill
+    setTimeout(() => {
+      document.getElementById('loader-wordmark').classList.add('in');
+      document.getElementById('loader-fill').classList.add('run');
+    }, 120);
+
+    function completeLoader() {
+      if (loaderDone) return;
+      loaderDone = true;
+
+      const loader = document.getElementById('intro-loader');
+      loader.classList.add('exit');
+
+      // Unlock scroll
+      lenis.start();
+      document.documentElement.style.overflow = "";
+
+      // Trigger Hero Reveals
+      revealHeroContent();
+
+      setTimeout(() => {
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+      }, EXIT_MS);
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(completeLoader, MIN_VISIBLE_MS);
+    });
+    setTimeout(completeLoader, MAX_VISIBLE_MS);
+
+    // Reveal Hero text with stagger
+    function revealHeroContent() {
+      // Giant Title Words (stagger 140ms)
+      const heroWords = document.querySelectorAll('.hero-word');
+      heroWords.forEach((el, idx) => {
+        setTimeout(() => el.classList.add('revealed'), idx * 140);
+      });
+
+      // Tagline lines (baseDelay 350ms, stagger 110ms)
+      const heroLines = document.querySelectorAll('.hero-line');
+      heroLines.forEach((el, idx) => {
+        setTimeout(() => el.classList.add('revealed'), 350 + idx * 110);
+      });
+
+      // Collection slider (delayIn 650ms)
+      setTimeout(() => {
+        const c = document.getElementById('hero-collection-box');
+        if (c) c.classList.add('revealed');
+      }, 650);
+
+      // Membership card (delayIn 780ms)
+      setTimeout(() => {
+        const m = document.getElementById('hero-membership-card');
+        if (m) m.classList.add('revealed');
+      }, 780);
+    }
+
+    // 4) Hero Parallax Plate on Scroll
+    const heroPlate = document.getElementById('hero-plate');
+    lenis.on('scroll', (e) => {
+      const scrollY = e.scroll;
+      const heroH = window.innerHeight;
+      if (scrollY <= heroH) {
+        const progress = scrollY / heroH;
+        heroPlate.style.transform = `translateY(${progress * 12}%)`;
+      }
+    });
+
+    // 5) Hero Collection Slider (Autoplay 3800ms)
+    const collections = [
+      {
+        img: 'https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/2.webp',
+        brand: 'Baseline Pro',
+        title: 'Featured Gear',
+        cta: 'Shop the kit',
+        alt: 'Player driving a backhand on a hard court'
+      },
+      {
+        img: 'https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/3.webp',
+        brand: 'Court Series',
+        title: 'Summer Drop',
+        cta: 'View the line',
+        alt: 'Player stretching for a forehand on clay'
+      },
+      {
+        img: 'https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/5.webp',
+        brand: 'Academy Kit',
+        title: 'Junior Range',
+        cta: 'Browse juniors',
+        alt: 'Player set in a ready stance on clay'
+      }
+    ];
+    let colIndex = 0;
+    let colTimer = null;
+
+    window.setCollectionSlide = function(idx) {
+      colIndex = idx;
+      const card = document.getElementById('collection-card');
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(16px) scale(0.96)';
+
+      setTimeout(() => {
+        const data = collections[colIndex];
+        const img = document.getElementById('col-img');
+        img.src = data.img;
+        img.alt = data.alt;
+        document.getElementById('col-brand').innerText = data.brand;
+        document.getElementById('col-title').innerText = data.title;
+        document.getElementById('col-cta').innerText = data.cta + ' →';
+
+        const dots = document.querySelectorAll('#hero-dots .dot-item');
+        dots.forEach((d, i) => d.setAttribute('aria-current', i === colIndex ? 'true' : 'false'));
+
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0) scale(1)';
+      }, 200);
+    };
+
+    function startColAutoplay() {
+      if (colTimer) clearInterval(colTimer);
+      colTimer = setInterval(() => {
+        setCollectionSlide((colIndex + 1) % collections.length);
+      }, 3800);
+    }
+    startColAutoplay();
+
+    // 6) Trust Section Ghost Words & Coach Carousel
+    const trustSlides = [
+      {
+        headline: ['Expert', 'Result-', 'Driven', 'Coaching'],
+        coach: {
+          name: 'Marco Vidal',
+          role: 'Head Coach',
+          img: 'https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/5.webp',
+          alt: 'Head coach set in a ready stance on clay'
+        }
+      },
+      {
+        headline: ['Sharper', 'Faster', 'Stronger', 'Player'],
+        coach: {
+          name: 'Elena Sokolova',
+          role: 'Performance Coach',
+          img: 'https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/4.webp',
+          alt: 'Performance coach following through on a serve'
+        }
+      },
+      {
+        headline: ['Future', 'Champions', 'Start', 'Here'],
+        coach: {
+          name: 'James Okoro',
+          role: 'Juniors Lead',
+          img: 'https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/1.webp',
+          alt: 'Juniors lead waiting to return on clay'
+        }
+      }
+    ];
+    let trustIndex = 0;
+
+    window.setTrustSlide = function(idx) {
+      trustIndex = idx;
+      const data = trustSlides[trustIndex];
+
+      // Cross-fade coach photo
+      const photo = document.getElementById('coach-photo');
+      photo.style.opacity = '0';
+      setTimeout(() => {
+        photo.src = data.coach.img;
+        photo.alt = data.coach.alt;
+        document.getElementById('coach-name').innerText = data.coach.name;
+        document.getElementById('coach-role').innerText = data.coach.role;
+        photo.style.opacity = '1';
+      }, 150);
+
+      // Re-fire ghost words clip reveal
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`gw-${i}`);
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(115%)';
+        setTimeout(() => {
+          el.innerText = data.headline[i - 1];
+          el.style.transition = 'transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease';
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 120 + i * 40);
+      }
+
+      // Update dots
+      const dots = document.querySelectorAll('#trust-dots .dot-item');
+      dots.forEach((d, i) => d.setAttribute('aria-current', i === trustIndex ? 'true' : 'false'));
+    };
+
+    window.cycleTrustSlide = function(delta) {
+      const next = (trustIndex + delta + trustSlides.length) % trustSlides.length;
+      setTrustSlide(next);
+    };
+
+    // Ghost Word X-Parallax on Scroll
+    lenis.on('scroll', (e) => {
+      const trustSection = document.getElementById('coaches');
+      if (!trustSection) return;
+      const rect = trustSection.getBoundingClientRect();
+      const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+      const clamped = Math.max(0, Math.min(1, progress));
+
+      const gw1 = document.getElementById('gw-1');
+      const gw2 = document.getElementById('gw-2');
+      const gw3 = document.getElementById('gw-3');
+      const gw4 = document.getElementById('gw-4');
+
+      if (gw1) gw1.style.transform = `translateX(${(-3 + clamped * 6)}%)`;
+      if (gw2) gw2.style.transform = `translateX(${(3 - clamped * 6)}%)`;
+      if (gw3) gw3.style.transform = `translateX(${(-2 + clamped * 6)}%)`;
+      if (gw4) gw4.style.transform = `translateX(${(4 - clamped * 7)}%)`;
+    });
+
+    // 7) IntersectionObserver for In-View Nodes
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+
+          // Trigger internal line reveals if present
+          const lines = entry.target.querySelectorAll('.clip-inner');
+          lines.forEach((l, idx) => {
+            setTimeout(() => l.classList.add('revealed'), idx * 120);
+          });
+
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.inview-node, .programs-section, .facilities-section, .stats-section, .testimonials-section, .footer-cta-band').forEach((node) => {
+      observer.observe(node);
+    });
+
+    // 8) Menu Overlay Controls
+    window.openMenuOverlay = function() {
+      const menu = document.getElementById('menu-overlay');
+      menu.classList.add('open');
+      menu.setAttribute('aria-hidden', 'false');
+      lenis.stop();
+      document.documentElement.style.overflow = "hidden";
+    };
+
+    window.closeMenuOverlay = function() {
+      const menu = document.getElementById('menu-overlay');
+      menu.classList.remove('open');
+      menu.setAttribute('aria-hidden', 'true');
+      lenis.start();
+      document.documentElement.style.overflow = "";
+    };
+
+    // 9) Contact Modal Controls
+    window.openContactModal = function() {
+      const modal = document.getElementById('contact-modal');
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      lenis.stop();
+      document.documentElement.style.overflow = "hidden";
+
+      setTimeout(() => {
+        const inp = document.getElementById('inp-name');
+        if (inp) inp.focus();
+      }, 120);
+    };
+
+    window.closeContactModal = function() {
+      const modal = document.getElementById('contact-modal');
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      lenis.start();
+      document.documentElement.style.overflow = "";
+
+      setTimeout(() => {
+        const form = document.getElementById('visit-form');
+        if (form) form.reset();
+        const success = document.getElementById('modal-success');
+        if (success) success.style.display = 'none';
+        if (form) form.style.display = 'flex';
+      }, 350);
+    };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMenuOverlay();
+        closeContactModal();
+      }
+    });
+
+    // 10) Visit Form Stub Submit
+    window.handleVisitSubmit = function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-visit');
+      btn.innerText = 'Sending…';
+      btn.disabled = true;
+
+      const nameVal = document.getElementById('inp-name').value || 'there';
+      const firstName = nameVal.trim().split(' ')[0] || 'there';
+
+      setTimeout(() => {
+        document.getElementById('visit-form').style.display = 'none';
+        const success = document.getElementById('modal-success');
+        document.getElementById('success-message').innerText = `Thanks, ${firstName} — our team will be in touch to lock in your visit.`;
+        success.style.display = 'flex';
+        btn.innerText = 'Request a visit';
+        btn.disabled = false;
+      }, 600);
+    };
+
+    // 11) Concurrency & Court Engine Tab Switcher
+    window.switchModalTab = function(tab) {
+      const tInquiry = document.getElementById('tab-inquiry');
+      const tEngine = document.getElementById('tab-engine');
+      const pInquiry = document.getElementById('panel-inquiry');
+      const pEngine = document.getElementById('panel-engine');
+
+      if (tab === 'inquiry') {
+        tInquiry.classList.add('active');
+        tEngine.classList.remove('active');
+        pInquiry.style.display = 'block';
+        pEngine.style.display = 'none';
+      } else {
+        tEngine.classList.add('active');
+        tInquiry.classList.remove('active');
+        pEngine.style.display = 'block';
+        pInquiry.style.display = 'none';
+        renderCourtSlots();
+      }
+    };
+
+    // 12) Live Concurrency Simulation Primitives (AtomicSeat Integration)
+    const courtSlots = [
+      { id: 'C1', name: 'Court 1 (Redline)', status: 'avail' },
+      { id: 'C2', name: 'Court 2 (Clay)', status: 'held' },
+      { id: 'C3', name: 'Court 3 (Harbor)', status: 'avail' },
+      { id: 'C4', name: 'Court 4 (Hard)', status: 'booked' }
+    ];
+    let selectedSlot = 'C1';
+
+    function renderCourtSlots() {
+      const grid = document.getElementById('court-grid');
+      grid.innerHTML = '';
+      courtSlots.forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `court-slot-btn ${slot.status === 'booked' ? 'booked' : slot.status === 'held' ? 'held' : slot.id === selectedSlot ? 'selected' : 'avail'}`;
+        btn.innerHTML = `<strong>${slot.id}</strong><span>${slot.status.toUpperCase()}</span>`;
+        if (slot.status === 'avail') {
+          btn.onclick = () => {
+            selectedSlot = slot.id;
+            renderCourtSlots();
+          };
+        }
+        grid.appendChild(btn);
+      });
+    }
+
+    let ttlSeconds = 300;
+    setInterval(() => {
+      ttlSeconds--;
+      if (ttlSeconds < 0) ttlSeconds = 300;
+      const m = Math.floor(ttlSeconds / 60);
+      const s = ttlSeconds % 60;
+      const timerEl = document.getElementById('demo-ttl');
+      if (timerEl) {
+        timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+    }, 1000);
+
+    window.runStressSimulation = function(mode) {
+      const status = document.getElementById('sim-status');
+      status.innerText = 'Blasting 50 concurrent bot requests…';
+
+      setTimeout(() => {
+        if (mode === 'naive') {
+          status.innerHTML = `<span style="color:#b91c1c; font-weight:bold;">⚠️ RACE CONDITION: 38 bots passed check! 38 Double Bookings detected for Court C1!</span>`;
+        } else {
+          status.innerHTML = `<span style="color:#15803d; font-weight:bold;">✅ ATOMICSEAT INTEGRITY: Exactly 1 winner! 49 deflected safely via Redis SETNX. 0 Double Bookings (100% ACID).</span>`;
+        }
+      }, 500);
+    };
+
+  </script>
+</body>
+</html>
